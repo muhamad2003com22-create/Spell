@@ -153,12 +153,19 @@ export default function App() {
   const parseAiError = (error: any, defaultMsg: string) => {
     let msg = defaultMsg;
     try {
-      const parsed = JSON.parse(error.message);
-      if (parsed.error?.message) {
-        msg = parsed.error.message;
-        if (msg.includes("API key not valid")) {
-          msg = "کلیلەکە (API Key) کار ناکات. تکایە لە بەشی Settings کلیلێکی ڕاست دابنێ.";
-        }
+      // Some errors are already objects, some are JSON strings
+      const errorData = typeof error.message === 'string' && error.message.includes('{') 
+        ? JSON.parse(error.message) 
+        : error;
+        
+      if (errorData.error?.message) {
+        msg = errorData.error.message;
+      } else if (errorData.message) {
+        msg = errorData.message;
+      }
+      
+      if (msg.includes("API key not valid") || msg.includes("INVALID_ARGUMENT")) {
+        msg = "کلیلەکە (API Key) کار ناکات. تکایە لە بەشی Settings کلیلێکی ڕاست دابنێ.";
       }
     } catch {
       msg = error.message || msg;
@@ -173,8 +180,8 @@ export default function App() {
     try {
       const ai = getAi();
       const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite-preview",
-        contents: [{ role: 'user', parts: [{ text: text }] }],
+        model: "gemini-3-flash-preview",
+        contents: text,
         config: {
           systemInstruction: "Kurdish spell checker. Fix errors. Return ONLY corrected text. No explanations.",
         },
@@ -204,12 +211,12 @@ export default function App() {
     if (!text) return;
     setIsAiLoading(true);
     setErrorMessage(null);
-    setCorrectedText(""); // Clear previous result for streaming feel
+    setCorrectedText(""); 
     try {
       const ai = getAi();
       const responseStream = await ai.models.generateContentStream({
-        model: "gemini-3.1-flash-lite-preview",
-        contents: [{ role: 'user', parts: [{ text: text }] }],
+        model: "gemini-3-flash-preview",
+        contents: text,
         config: {
           systemInstruction: `تۆ پسپۆڕی زمانی کوردی (سۆرانی). دەقەکە چاک بکە. تەنها دەقە چاککراوەکە بنێرەوە.`,
         },
@@ -248,10 +255,10 @@ export default function App() {
     try {
       const ai = getAi();
       const responseStream = await ai.models.generateContentStream({
-        model: "gemini-3.1-flash-lite-preview",
-        contents: [{ role: 'user', parts: [{ text: text }] }],
+        model: "gemini-3-flash-preview",
+        contents: text,
         config: {
-          systemInstruction: `Translate between Kurdish and English. Target: ${uiLang === 'KU' ? 'Kurdish Sorani' : 'English'}. ONLY translation.`,
+          systemInstruction: `You are a professional translator. Translate the input text. If the input is in Kurdish, translate it to English. If the input is in English, translate it to Kurdish Sorani. Provide ONLY the translated text.`,
         },
       });
       
