@@ -11,7 +11,14 @@ export interface Suggestion {
 // Common mistakes mapping for auto-correction
 export const COMMON_MISTAKES: Record<string, string> = {
   // Sorani examples
+  "سلاو": "سڵاو",
   "سڵاوو": "سڵاو",
+  "باشە": "باشە",
+  "سپاس": "سوپاس",
+  "مال": "ماڵ",
+  "گول": "گوڵ",
+  "دل": "دڵ",
+  "کوردستان": "کوردستان",
   "کوردیی": "کوردی",
   "ئەحمەد": "ئەحمەد",
   "کتێب": "کتێب",

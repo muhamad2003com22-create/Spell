@@ -22,7 +22,13 @@ import {
 import { isCorrect, getSuggestions, autoCorrect, Suggestion } from "./lib/spellChecker";
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const getAi = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn("GEMINI_API_KEY is not defined in the environment.");
+  }
+  return new GoogleGenAI({ apiKey: apiKey || "" });
+};
 
 interface HistoryItem {
   id: string;
@@ -146,11 +152,12 @@ export default function App() {
     if (!text) return;
     setIsQuickFixLoading(true);
     try {
+      const ai = getAi();
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: text,
+        contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
-          systemInstruction: "You are in Quick Fix mode. Analyze the input, fix errors instantly, and provide only the corrected version without long explanations.",
+          systemInstruction: "You are a Kurdish spell checker. Fix all spelling and grammar errors in the provided text. Return ONLY the corrected text. Do not explain anything. If the text is already correct, return it as is.",
         },
       });
       
@@ -158,10 +165,12 @@ export default function App() {
         const result = response.text.trim();
         setCorrectedText(result);
         addToHistory(text, result, 'quick');
+      } else {
+        throw new Error("Empty response from AI");
       }
     } catch (error) {
       console.error("Quick Fix Error:", error);
-      // Fallback to local correction if AI fails
+      // Fallback to local correction
       const result = autoCorrect(text);
       setCorrectedText(result);
       addToHistory(text, result, 'quick');
@@ -174,12 +183,13 @@ export default function App() {
     if (!text) return;
     setIsAiLoading(true);
     try {
+      const ai = getAi();
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: text,
+        contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
           systemInstruction: `تۆ یاریدەدەرێکی پسپۆڕی زمانی کوردی (شێوەزاری سۆرانی). ئەرکی تۆ ئەوەیە هەر دەقێکی کوردی کە بۆت دەنێرم، پێداچوونەوەی بۆ بکەیت و هەڵە ڕێنووس و ڕێزمانییەکانی چاک بکەیت. تکایە ئەم خاڵانە ڕەچاو بکە:
-1. پیتەکانی (و، وو، ۆ، ی، ێ) بە دروستی بەکاربهێنە.
+1. پیتەکانی (و، وو، ۆ، ی، ێ) بە دروستی بەکاربهێنە. بۆ نموونە "سڵاو" نەک "سلاو".
 2. جیاکاری بکە لە نێوان (ە) و (ە)ی جێناو.
 3. ئەگەر دەقەکە وشەی بیانی تێدابوو، بیگۆڕە بۆ کوردییەکی پاراو ئەگەر گونجاو بوو.
 4. تەنها دەقە چاککراوەکە بنێرەوە بەبێ هیچ ڕوونکردنەوەیەک.`,
@@ -190,9 +200,15 @@ export default function App() {
         const result = response.text.trim();
         setCorrectedText(result);
         addToHistory(text, result, 'expert');
+      } else {
+        throw new Error("Empty response from AI");
       }
     } catch (error) {
       console.error("AI Correction Error:", error);
+      // Fallback to local correction
+      const result = autoCorrect(text);
+      setCorrectedText(result);
+      addToHistory(text, result, 'expert');
     } finally {
       setIsAiLoading(false);
     }
@@ -203,9 +219,10 @@ export default function App() {
     setIsTranslating(true);
     
     try {
+      const ai = getAi();
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: text,
+        contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
           systemInstruction: `You are a professional translator between Kurdish (Sorani/Kurmanji) and English. 
           Translate the input text accurately. 
@@ -218,6 +235,8 @@ export default function App() {
         const result = response.text.trim();
         setCorrectedText(result);
         addToHistory(text, result, 'expert');
+      } else {
+        throw new Error("Empty response from AI");
       }
     } catch (error) {
       console.error("Translation Error:", error);
@@ -311,6 +330,12 @@ export default function App() {
             <p className="text-gray-400 max-w-md text-lg leading-relaxed">
               {t.description}
             </p>
+            {!process.env.GEMINI_API_KEY && (
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <p>Gemini API Key is missing. Please add it to your environment variables.</p>
+              </div>
+            )}
           </motion.div>
 
           <motion.div 
