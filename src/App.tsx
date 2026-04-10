@@ -150,6 +150,22 @@ export default function App() {
     setHistory(prev => [newItem, ...prev].slice(0, 50)); // Keep last 50 items
   };
 
+  const parseAiError = (error: any, defaultMsg: string) => {
+    let msg = defaultMsg;
+    try {
+      const parsed = JSON.parse(error.message);
+      if (parsed.error?.message) {
+        msg = parsed.error.message;
+        if (msg.includes("API key not valid")) {
+          msg = "کلیلەکە (API Key) کار ناکات. تکایە لە بەشی Settings کلیلێکی ڕاست دابنێ.";
+        }
+      }
+    } catch {
+      msg = error.message || msg;
+    }
+    return msg;
+  };
+
   const handleCorrect = async () => {
     if (!text) return;
     setIsQuickFixLoading(true);
@@ -174,7 +190,7 @@ export default function App() {
       }
     } catch (error: any) {
       console.error("Quick Fix Error:", error);
-      setErrorMessage(error.message || "AI Error occurred");
+      setErrorMessage(parseAiError(error, "AI Error occurred"));
       // Fallback to local correction
       const result = autoCorrect(text);
       setCorrectedText(result);
@@ -212,7 +228,7 @@ export default function App() {
       }
     } catch (error: any) {
       console.error("AI Correction Error:", error);
-      setErrorMessage(error.message || "AI Error occurred");
+      setErrorMessage(parseAiError(error, "AI Error occurred"));
       // Fallback to local correction
       const result = autoCorrect(text);
       setCorrectedText(result);
@@ -249,7 +265,7 @@ export default function App() {
       }
     } catch (error: any) {
       console.error("Translation Error:", error);
-      setErrorMessage(error.message || "Translation Error occurred");
+      setErrorMessage(parseAiError(error, "Translation Error occurred"));
     } finally {
       setIsTranslating(false);
     }
