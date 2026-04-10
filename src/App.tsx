@@ -173,10 +173,10 @@ export default function App() {
     try {
       const ai = getAi();
       const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-3.1-flash-lite-preview",
         contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
-          systemInstruction: "You are a Kurdish spell checker. Fix all spelling and grammar errors in the provided text. Return ONLY the corrected text. Do not explain anything. If the text is already correct, return it as is. Ensure Kurdish characters like ڵ, ڕ, ۆ, ێ are used correctly.",
+          systemInstruction: "Kurdish spell checker. Fix errors. Return ONLY corrected text. No explanations.",
         },
       });
       
@@ -204,25 +204,27 @@ export default function App() {
     if (!text) return;
     setIsAiLoading(true);
     setErrorMessage(null);
+    setCorrectedText(""); // Clear previous result for streaming feel
     try {
       const ai = getAi();
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+      const responseStream = await ai.models.generateContentStream({
+        model: "gemini-3.1-flash-lite-preview",
         contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
-          systemInstruction: `تۆ یاریدەدەرێکی پسپۆڕی زمانی کوردی (شێوەزاری سۆرانی). ئەرکی تۆ ئەوەیە هەر دەقێکی کوردی کە بۆت دەنێرم، پێداچوونەوەی بۆ بکەیت و هەڵە ڕێنووس و ڕێزمانییەکانی چاک بکەیت. تکایە ئەم خاڵانە ڕەچاو بکە:
-1. پیتەکانی (و، وو، ۆ، ی، ێ) بە دروستی بەکاربهێنە. بۆ نموونە "سڵاو" نەک "سلاو".
-2. جیاکاری بکە لە نێوان (ە) و (ە)ی جێناو.
-3. ئەگەر دەقەکە وشەی بیانی تێدابوو، بیگۆڕە بۆ کوردییەکی پاراو ئەگەر گونجاو بوو.
-4. تەنها دەقە چاککراوەکە بنێرەوە بەبێ هیچ ڕوونکردنەوەیەک.`,
+          systemInstruction: `تۆ پسپۆڕی زمانی کوردی (سۆرانی). دەقەکە چاک بکە. تەنها دەقە چاککراوەکە بنێرەوە.`,
         },
       });
       
-      const resultText = response.text;
-      if (resultText) {
-        const result = resultText.trim();
-        setCorrectedText(result);
-        addToHistory(text, result, 'expert');
+      let fullText = "";
+      for await (const chunk of responseStream) {
+        if (chunk.text) {
+          fullText += chunk.text;
+          setCorrectedText(fullText);
+        }
+      }
+      
+      if (fullText) {
+        addToHistory(text, fullText.trim(), 'expert');
       } else {
         throw new Error("Empty response from AI");
       }
@@ -242,24 +244,27 @@ export default function App() {
     if (!text) return;
     setIsTranslating(true);
     setErrorMessage(null);
+    setCorrectedText("");
     try {
       const ai = getAi();
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+      const responseStream = await ai.models.generateContentStream({
+        model: "gemini-3.1-flash-lite-preview",
         contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
-          systemInstruction: `You are a professional translator between Kurdish (Sorani/Kurmanji) and English. 
-          Translate the input text accurately. 
-          Target Language: ${uiLang === 'KU' ? 'Kurdish Sorani' : 'English'}.
-          Provide ONLY the translation text without any extra comments.`,
+          systemInstruction: `Translate between Kurdish and English. Target: ${uiLang === 'KU' ? 'Kurdish Sorani' : 'English'}. ONLY translation.`,
         },
       });
       
-      const resultText = response.text;
-      if (resultText) {
-        const result = resultText.trim();
-        setCorrectedText(result);
-        addToHistory(text, result, 'expert');
+      let fullText = "";
+      for await (const chunk of responseStream) {
+        if (chunk.text) {
+          fullText += chunk.text;
+          setCorrectedText(fullText);
+        }
+      }
+      
+      if (fullText) {
+        addToHistory(text, fullText.trim(), 'expert');
       } else {
         throw new Error("Empty response from AI");
       }
