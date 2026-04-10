@@ -54,6 +54,8 @@ export default function App() {
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [uiLang, setUiLang] = useState<'KU' | 'EN'>('KU');
   
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -151,6 +153,7 @@ export default function App() {
   const handleCorrect = async () => {
     if (!text) return;
     setIsQuickFixLoading(true);
+    setErrorMessage(null);
     try {
       const ai = getAi();
       const response = await ai.models.generateContent({
@@ -169,8 +172,9 @@ export default function App() {
       } else {
         throw new Error("Empty response from AI");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Quick Fix Error:", error);
+      setErrorMessage(error.message || "AI Error occurred");
       // Fallback to local correction
       const result = autoCorrect(text);
       setCorrectedText(result);
@@ -183,6 +187,7 @@ export default function App() {
   const handleAiRefine = async () => {
     if (!text) return;
     setIsAiLoading(true);
+    setErrorMessage(null);
     try {
       const ai = getAi();
       const response = await ai.models.generateContent({
@@ -205,8 +210,9 @@ export default function App() {
       } else {
         throw new Error("Empty response from AI");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI Correction Error:", error);
+      setErrorMessage(error.message || "AI Error occurred");
       // Fallback to local correction
       const result = autoCorrect(text);
       setCorrectedText(result);
@@ -219,7 +225,7 @@ export default function App() {
   const handleTranslate = async () => {
     if (!text) return;
     setIsTranslating(true);
-    
+    setErrorMessage(null);
     try {
       const ai = getAi();
       const response = await ai.models.generateContent({
@@ -233,15 +239,17 @@ export default function App() {
         },
       });
       
-      if (response.text) {
-        const result = response.text.trim();
+      const resultText = response.text;
+      if (resultText) {
+        const result = resultText.trim();
         setCorrectedText(result);
         addToHistory(text, result, 'expert');
       } else {
         throw new Error("Empty response from AI");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Translation Error:", error);
+      setErrorMessage(error.message || "Translation Error occurred");
     } finally {
       setIsTranslating(false);
     }
@@ -339,6 +347,12 @@ export default function App() {
             <p className="text-gray-400 max-w-md text-lg leading-relaxed">
               {t.description}
             </p>
+            {errorMessage && (
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <p>{errorMessage}</p>
+              </div>
+            )}
             {!process.env.GEMINI_API_KEY && (
               <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />

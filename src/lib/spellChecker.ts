@@ -32,6 +32,14 @@ export const COMMON_MISTAKES: Record<string, string> = {
   "هه ولیر": "هەولێر",
   "که رکوک": "کەرکووک",
   "دهۆک": "دهۆک",
+  "ئه و": "ئەو",
+  "ئه م": "ئەم",
+  "ئه وانه": "ئەوانە",
+  "ئه مانه": "ئەمانە",
+  "بو": "بۆ",
+  "چون": "چۆن",
+  "باشیت": "باشیت",
+  "سوپاس": "سوپاس",
   
   // Kurmanji examples
   "silaw": "silav",
@@ -131,7 +139,12 @@ export function getSuggestions(word: string, limit: number = 3): Suggestion[] {
 export function isCorrect(word: string): boolean {
   if (!word) return true;
   const cleanWord = word.trim().toLowerCase();
-  return DICTIONARY.includes(cleanWord) || !!COMMON_MISTAKES[cleanWord];
+  // If it's a known mistake, it's NOT correct
+  if (COMMON_MISTAKES[cleanWord]) return false;
+  // For now, if it's in our dictionary, it's correct.
+  // If it's not in either, we'll assume it might be correct to avoid too many false positives
+  // given our small dictionary, UNLESS it's a known mistake.
+  return true; 
 }
 
 /**
