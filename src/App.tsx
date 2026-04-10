@@ -336,29 +336,29 @@ export default function App() {
         />
       </div>
 
-      <main className="relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-20">
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="p-1.5 md:p-2 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20">
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <span className="text-xs font-mono uppercase tracking-[0.2em] text-orange-500 font-bold">
+              <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.2em] text-orange-500 font-bold">
                 Hama
               </span>
             </div>
-            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-none mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold tracking-tighter leading-tight md:leading-none mb-4">
               {t.title} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
                 {t.subtitle}
               </span>
             </h1>
-            <p className="text-gray-400 max-w-md text-lg leading-relaxed">
+            <p className="text-gray-400 max-w-md text-base md:text-lg leading-relaxed">
               {t.description}
             </p>
             {errorMessage && (
@@ -555,7 +555,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Main Interface */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {/* Input Section */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -566,15 +566,15 @@ export default function App() {
             <div className="relative group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
               <div className="relative bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                <div className="flex items-center justify-between px-6 py-4 border-bottom border-white/5 bg-white/[0.02]">
+                <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-bottom border-white/5 bg-white/[0.02]">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                    <span className="text-xs font-mono uppercase tracking-wider text-gray-400">{t.inputText}</span>
+                    <span className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-gray-400">{t.inputText}</span>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4">
                     <button 
                       onClick={() => setIsRtl(!isRtl)}
-                      className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
+                      className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
                     >
                       {isRtl ? "RTL" : "LTR"}
                     </button>
@@ -583,7 +583,7 @@ export default function App() {
                       className="text-gray-500 hover:text-white transition-colors"
                       title={t.clear}
                     >
-                      <RotateCcw className="w-4 h-4" />
+                      <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                   </div>
                 </div>
@@ -594,11 +594,11 @@ export default function App() {
                   onChange={handleTextChange}
                   placeholder={t.placeholder}
                   dir={isRtl ? "rtl" : "ltr"}
-                  className="w-full h-64 md:h-80 bg-transparent p-6 md:p-8 text-lg md:text-xl leading-relaxed focus:outline-none resize-none placeholder:text-gray-700"
+                  className="w-full h-48 sm:h-64 md:h-80 bg-transparent p-4 md:p-8 text-base md:text-xl leading-relaxed focus:outline-none resize-none placeholder:text-gray-700"
                 />
 
-                <div className="px-6 py-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap gap-3 justify-between items-center">
-                  <span className="text-xs text-gray-500 font-mono">
+                <div className="px-4 md:px-6 py-3 md:py-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap gap-2 md:gap-3 justify-between items-center">
+                  <span className="text-[10px] md:text-xs text-gray-500 font-mono">
                     {text.length} {t.characters} | {text.split(/\s+/).filter(Boolean).length} {t.words}
                   </span>
                       <div className="flex gap-2">
@@ -606,9 +606,9 @@ export default function App() {
                       <button 
                         onClick={handleTranslate}
                         disabled={!text || isTranslating}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-full transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                        className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs md:text-sm font-bold rounded-full transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
                       >
-                        {isTranslating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Languages className="w-4 h-4" />}
+                        {isTranslating ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" /> : <Languages className="w-3 h-3 md:w-4 md:h-4" />}
                         {t.translate}
                       </button>
                     ) : (
@@ -616,17 +616,17 @@ export default function App() {
                         <button 
                           onClick={handleAiRefine}
                           disabled={!text || isAiLoading}
-                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-full transition-all flex items-center gap-2 shadow-lg shadow-purple-500/20"
+                          className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs md:text-sm font-bold rounded-full transition-all flex items-center gap-2 shadow-lg shadow-purple-500/20"
                         >
-                          {isAiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <BrainCircuit className="w-4 h-4" />}
+                          {isAiLoading ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" /> : <BrainCircuit className="w-3 h-3 md:w-4 md:h-4" />}
                           {t.aiExpert}
                         </button>
                         <button 
                           onClick={handleCorrect}
                           disabled={!text || isQuickFixLoading}
-                          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-full transition-all flex items-center gap-2 shadow-lg shadow-orange-500/20"
+                          className="px-3 md:px-4 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs md:text-sm font-bold rounded-full transition-all flex items-center gap-2 shadow-lg shadow-orange-500/20"
                         >
-                          {isQuickFixLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                          {isQuickFixLoading ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" /> : <Sparkles className="w-3 h-3 md:w-4 md:h-4" />}
                           {t.quickFix}
                         </button>
                       </>
@@ -644,35 +644,35 @@ export default function App() {
             transition={{ delay: 0.4 }}
             className="flex flex-col gap-4"
           >
-            <div className="relative h-full">
+            <div className="relative h-full min-h-[300px]">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-500 rounded-3xl blur opacity-10"></div>
               <div className="relative h-full bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                <div className="flex items-center justify-between px-6 py-4 border-bottom border-white/5 bg-white/[0.02]">
+                <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-bottom border-white/5 bg-white/[0.02]">
                   <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4 text-orange-500" />
-                    <span className="text-xs font-mono uppercase tracking-wider text-gray-400">{t.analysis}</span>
+                    <Search className="w-3.5 h-3.5 md:w-4 md:h-4 text-orange-500" />
+                    <span className="text-[10px] md:text-xs font-mono uppercase tracking-wider text-gray-400">{t.analysis}</span>
                   </div>
                   <button 
                     onClick={handleCopy}
-                    className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white transition-colors"
+                    className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-gray-400 hover:text-white transition-colors"
                   >
-                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500" /> : <Copy className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                     {copied ? t.copied : t.copyResult}
                   </button>
                 </div>
 
-                <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+                <div className="flex-1 p-4 md:p-8 overflow-y-auto">
                   {correctedText ? (
                     <div 
                       dir={isRtl ? "rtl" : "ltr"}
-                      className="text-lg md:text-xl leading-relaxed whitespace-pre-wrap text-orange-100"
+                      className="text-base md:text-xl leading-relaxed whitespace-pre-wrap text-orange-100"
                     >
                       {correctedText}
                     </div>
                   ) : text ? (
                     <div 
                       dir={isRtl ? "rtl" : "ltr"}
-                      className="text-lg md:text-xl leading-relaxed whitespace-pre-wrap"
+                      className="text-base md:text-xl leading-relaxed whitespace-pre-wrap"
                     >
                       {words.map((word, i) => {
                         const isMisspelled = !checkWord(word);
@@ -690,9 +690,9 @@ export default function App() {
                       })}
                     </div>
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center text-gray-600">
-                      <Search className="w-12 h-12 mb-4 opacity-20" />
-                      <p className="text-sm italic">{t.analysisPlaceholder}</p>
+                    <div className="h-full flex flex-col items-center justify-center text-center text-gray-600 py-12">
+                      <Search className="w-10 h-10 md:w-12 md:h-12 mb-4 opacity-20" />
+                      <p className="text-xs md:text-sm italic">{t.analysisPlaceholder}</p>
                     </div>
                   )}
                 </div>
