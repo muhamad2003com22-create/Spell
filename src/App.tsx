@@ -157,12 +157,13 @@ export default function App() {
         model: "gemini-3-flash-preview",
         contents: [{ role: 'user', parts: [{ text: text }] }],
         config: {
-          systemInstruction: "You are a Kurdish spell checker. Fix all spelling and grammar errors in the provided text. Return ONLY the corrected text. Do not explain anything. If the text is already correct, return it as is.",
+          systemInstruction: "You are a Kurdish spell checker. Fix all spelling and grammar errors in the provided text. Return ONLY the corrected text. Do not explain anything. If the text is already correct, return it as is. Ensure Kurdish characters like ڵ, ڕ, ۆ, ێ are used correctly.",
         },
       });
       
-      if (response.text) {
-        const result = response.text.trim();
+      const resultText = response.text;
+      if (resultText) {
+        const result = resultText.trim();
         setCorrectedText(result);
         addToHistory(text, result, 'quick');
       } else {
@@ -196,8 +197,9 @@ export default function App() {
         },
       });
       
-      if (response.text) {
-        const result = response.text.trim();
+      const resultText = response.text;
+      if (resultText) {
+        const result = resultText.trim();
         setCorrectedText(result);
         addToHistory(text, result, 'expert');
       } else {
@@ -253,6 +255,13 @@ export default function App() {
 
   const clearHistory = () => {
     setHistory([]);
+  };
+
+  const handleLocalFix = () => {
+    if (!text) return;
+    const result = autoCorrect(text);
+    setCorrectedText(result);
+    addToHistory(text, result, 'quick');
   };
 
   const handleCopy = () => {
@@ -564,8 +573,17 @@ export default function App() {
                   <span className="text-xs text-gray-500 font-mono">
                     {text.length} {t.characters} | {text.split(/\s+/).filter(Boolean).length} {t.words}
                   </span>
-                  <div className="flex gap-2">
-                    {mode === 'translate' ? (
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={handleLocalFix}
+                          disabled={!text}
+                          className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white text-sm font-bold rounded-full transition-all flex items-center gap-2"
+                          title="Local Fix (No AI)"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          ناوخۆیی
+                        </button>
+                        {mode === 'translate' ? (
                       <button 
                         onClick={handleTranslate}
                         disabled={!text || isTranslating}
